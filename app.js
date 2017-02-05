@@ -18,6 +18,7 @@ class App extends Component {
     this.handleAddItem = this.handleAddItem.bind(this);
     this.handleToggleComplete = this.handleToggleComplete.bind(this);
     this.handleToggleAllComplete = this.handleToggleAllComplete.bind(this);
+    this.handleRemoveItem = this.handleRemoveItem.bind(this);
   }
   setSource(items, itemsDatasource, otherState) {
     this.setState({
@@ -65,6 +66,12 @@ class App extends Component {
 //      value: ""
 //    })
   }
+  handleRemoveItem(key) {
+    const newItems = this.state.items.filter((item) => {
+      return item.key !== key;
+    });
+    this.setSource(newItems, newItems);
+  }
   render() {
     return (
       <View style={styles.container}>
@@ -85,6 +92,7 @@ class App extends Component {
                 <Row
                   key={key}
                   onComplete={(complete) => this.handleToggleAllComplete(key, complete)}
+                  onRemove={() => this.handleRemoveItem(key)}
                   {...value}
                 />
               )
