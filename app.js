@@ -9,7 +9,13 @@ const filterItems = (filter, items) => {
     if (filter === "ALL") return true;
     if (filter === "COMPLETED") return item.complete;
     if (filter === "ACTIVE") return !item.complete;
-  })
+  });
+};
+
+const sortItems = (items) => {
+  items.sort(function(a, b) {
+    return b.priority - a.priority;
+  });
 };
 
 class App extends Component {
@@ -33,11 +39,14 @@ class App extends Component {
     this.handleClearComplete = this.handleClearComplete.bind(this);
     this.handleUpdateText = this.handleUpdateText.bind(this);
     this.handleToggleEditing = this.handleToggleEditing.bind(this);
+    this.handleMoveUp = this.handleMoveUp.bind(this);
+    this.handleMoveDown = this.handleMoveDown.bind(this);
   }
   componentWillMount() {
     AsyncStorage.getItem("items").then((json) => {
       try {
         const items = JSON.parse(json);
+        sortItems(items);
         this.setSource(items, items, {loading: false});
       } catch(e) {
         this.setState({
@@ -91,11 +100,6 @@ class App extends Component {
       complete
     }));
     this.setSource(newItems, filterItems(this.state.filter, newItems), { allComplete: complete })
-//    console.table(newItems);
-//    this.setState({
-//      items: newItems,
-//      allComplete: complete
-//    });
   }
   handleAddItem() {
     if (!this.state.value) return;
@@ -103,15 +107,13 @@ class App extends Component {
       ...this.state.items,
       {
         key: Date.now(),
-        text: this.state.value,
-        complete: false
+        text: this.state.value.trim(),
+        complete: false,
+        priority: 0
       }
-    ]
+    ];
+    sortItems(newItems);
     this.setSource(newItems, filterItems(this.state.filter, newItems), { value: " "});
-//    this.setState({
-//      items: newItems,
-//      value: ""
-//    })
   }
   handleRemoveItem(key) {
     const newItems = this.state.items.filter((item) => {
@@ -125,6 +127,36 @@ class App extends Component {
   handleClearComplete() {
     const newItems = filterItems("ACTIVE", this.state.items);
     this.setSource(newItems, filterItems(this.state.filter, newItems));
+  }
+  handleMoveUp(key) {
+    const newItems = this.state.items.map((item) => {
+      if (item.key === key) {
+        let newPriority = item.priority < 10 ? item.priority++ : 10;
+        return {
+          ...item,
+          newPriority
+        }
+      }
+      return item;
+    });
+    sortItems(newItems);
+    this.setSource(newItems, filterItems(this.state.filter, newItems));
+  }
+  handleMoveDown(key) {
+    const newItems = this.state.items.map((item) => {
+      if (item.key === key) {
+        let newPriority = item.priority >= 1 ? item.priority-- : 0;
+        return {
+          ...item,
+          newPriority
+        }
+      }
+      return item;
+    });
+    sortItems(newItems);
+    console.log(newItems);
+    this.setSource(newItems, filterItems(this.state.filter, newItems));
+
   }
   render() {
     return (
@@ -147,6 +179,8 @@ class App extends Component {
                   key={key}
                   onUpdate={(text) => this.handleUpdateText(key, text)}
                   onToggleEdit={(editing) => this.handleToggleEditing(key, editing)}
+                  onMoveUp={() => this.handleMoveUp(key)}
+                  onMoveDown={() => this.handleMoveDown(key)}
                   onComplete={(complete) => this.handleToggleComplete(key, complete)}
                   onRemove={() => this.handleRemoveItem(key)}
                   {...value}

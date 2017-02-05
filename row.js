@@ -7,6 +7,7 @@ class Row extends Component {
     const textComponent = (
       <TouchableOpacity style={styles.textWrap} onLongPress={() => this.props.onToggleEdit(true)}>
         <Text style={[styles.text, complete && styles.complete]}>{this.props.text}</Text>
+        <Text style={styles.priorityText}>Priority: {this.props.priority}</Text>
       </TouchableOpacity>
     );
     const removeButton = (
@@ -30,6 +31,16 @@ class Row extends Component {
         />
       </View>
     );
+    const moveUpButton = (
+      <TouchableOpacity onPress={this.props.onMoveUp}>
+        <Text style={styles.moveUp}>{String.fromCharCode(8593)}</Text>
+      </TouchableOpacity>
+    );
+    const moveDownButton = (
+      <TouchableOpacity onPress={this.props.onMoveDown}>
+        <Text style={styles.moveDown}>{String.fromCharCode(8595)}</Text>
+      </TouchableOpacity>
+    );
     return (
       <View style={styles.container}>
         <Switch
@@ -37,7 +48,9 @@ class Row extends Component {
           onValueChange={this.props.onComplete}
         />
         { this.props.editing ? editingComponent : textComponent }
-        { this.props.editing ? doneButton : removeButton }
+        { this.props.editing ? null : moveUpButton }
+        { this.props.editing ? null : moveDownButton }
+        { this.props.editing ? doneButton : removeButton}
       </View>
     )
   }
@@ -63,7 +76,10 @@ const styles = StyleSheet.create({
   },
   destroy: {
     fontSize: 20,
-    color: "#cc9a9a"
+    backgroundColor: "red",
+    color: "white",
+    paddingLeft: 5,
+    paddingRight: 5,
   },
   input: {
     height: 100,
@@ -81,6 +97,25 @@ const styles = StyleSheet.create({
   doneText: {
     color: "#4d4d4d",
     fontSize: 20
+  },
+  moveUp: {
+    fontSize: 20,
+    backgroundColor: "green",
+    color: "white",
+    paddingLeft: 5,
+    paddingRight: 5,
+    marginRight: 3
+  } ,
+  moveDown: {
+    fontSize: 20,
+    backgroundColor: "gray",
+    color: "white",
+    paddingLeft: 5,
+    paddingRight: 5,
+    marginRight: 3
+  },
+  priorityText: {
+    color: "#baa"
   }
 });
 
