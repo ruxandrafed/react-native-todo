@@ -113,7 +113,7 @@ class App extends Component {
       }
     ];
     sortItems(newItems);
-    this.setSource(newItems, filterItems(this.state.filter, newItems), { value: " "});
+    this.setSource(newItems, filterItems(this.state.filter, newItems), { value: ""});
   }
   handleRemoveItem(key) {
     const newItems = this.state.items.filter((item) => {
@@ -154,7 +154,6 @@ class App extends Component {
       return item;
     });
     sortItems(newItems);
-    console.log(newItems);
     this.setSource(newItems, filterItems(this.state.filter, newItems));
 
   }
