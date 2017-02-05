@@ -118,6 +118,7 @@ class App extends Component {
         <Footer
           onFilter={this.handleFilter}
           filter={this.state.filter}
+          count={filterItems("ACTIVE", this.state.items).length}
         />
       </View>
     )
